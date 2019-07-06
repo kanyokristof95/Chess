@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:view="clr-namespace:Chess.View"
+        xmlns:viewModel="clr-namespace:Chess.ViewModel;assembly=Chess"
         xmlns:persistence="clr-namespace:Chess.Persistence;assembly=Chess"
         mc:Ignorable="d"
         RenderOptions.EdgeMode="Aliased"
@@ -12,7 +13,7 @@
         <view:FieldIndexConverter x:Key="fieldIndexConverter" />
     </Window.Resources>
     <Window.InputBindings>
-        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding NewGameCommand}"/>
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding NewGameCommand}" CommandParameter="{x:Static viewModel:GameMode.PlayerVsPlayer}"/>
         <KeyBinding Key="Z" Modifiers="Ctrl" Command="{Binding UndoCommand}"/>
         <KeyBinding Key="Q" Modifiers="Ctrl" Command="{Binding ExitCommand}"/>
     </Window.InputBindings>
@@ -25,7 +26,15 @@
         <!-- Menu -->
         <Menu Grid.Row="0">
             <MenuItem Header="Game">
-                <MenuItem Header="New Game" Command="{Binding NewGameCommand}" InputGestureText="Ctrl+N"/>
+                <MenuItem Header="New Game">
+                    <MenuItem Header="Player vs Player" Command="{Binding NewGameCommand}" CommandParameter="{x:Static viewModel:GameMode.PlayerVsPlayer}"/>
+                    <MenuItem Header="Player vs Computer" Command="{Binding NewGameCommand}" CommandParameter="{x:Static viewModel:GameMode.PlayerVsComputer}"/>
+                    <MenuItem Header="Computer vs Player" Command="{Binding NewGameCommand}" CommandParameter="{x:Static viewModel:GameMode.ComputerVsPlayer}"/>
+                </MenuItem>
+                <MenuItem Header="Difficulty">
+                    <MenuItem Header="Very easy" IsChecked="True"/>
+                    <MenuItem Header="Easy"/>
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="Undo" Command="{Binding UndoCommand}" InputGestureText="Ctrl+Z"/>
                 <Separator />
@@ -66,10 +75,18 @@
                                     </Style>
                                 </Ellipse.Style>
                             </Ellipse>
-                            <Image Margin="10" Grid.Row="1" Grid.Column="1">
+                            <Image Margin="10" Grid.Row="1" Grid.Column="1" RenderTransformOrigin=".5,.5">
                                 <Image.Style>
                                     <Style TargetType="Image">
                                         <Style.Triggers>
+                                            <!--<DataTrigger Binding="{Binding Colour}" Value="{x:Static persistence:Colour.Black}">
+                                                <Setter Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <RotateTransform Angle="180" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>-->
+
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
                                                     <Condition Binding="{Binding Colour}" Value="{x:Static persistence:Colour.Black}" />

@@ -13,6 +13,8 @@ namespace Chess.ViewModel
 
         private readonly ChessModel _model;
 
+        private GameMode _gameMode;
+
         #endregion
 
 
@@ -27,7 +29,7 @@ namespace Chess.ViewModel
 
             Fields = new ObservableCollection<GridField>();
 
-            NewGameCommand = new DelegateCommand(param => { NewGame(); });
+            NewGameCommand = new DelegateCommand(param => { NewGame((GameMode) param); });
             UndoCommand = new DelegateCommand(param => { Undo(); });
             ExitCommand = new DelegateCommand(param => { Exit(); });
         }
@@ -37,7 +39,7 @@ namespace Chess.ViewModel
 
         #region Private methods 
 
-        private void NewGame()
+        private void NewGame(GameMode gameMode)
         {
             _model.NewGame();
 
@@ -62,10 +64,19 @@ namespace Chess.ViewModel
             }
 
             Status = "White player";
+
+            _gameMode = gameMode;
+            if (gameMode != GameMode.PlayerVsPlayer)
+            {
+                OnStartGame(_gameMode);
+            }
         }
 
         private void Undo()
         {
+            if (_gameMode != GameMode.PlayerVsPlayer)
+                return;
+
             _model.Undo();
             Refresh();
         }
@@ -83,8 +94,22 @@ namespace Chess.ViewModel
 
             try
             {
-                _model.Click(row, column, _model.GetCurrentPlayer());
-            } catch(ChessException e)
+                Colour colour = Colour.Empty;
+                switch (_gameMode)
+                {
+                    case GameMode.PlayerVsPlayer:
+                        colour = _model.GetCurrentPlayer();
+                        break;
+                    case GameMode.PlayerVsComputer:
+                        colour = Colour.White;
+                        break;
+                    case GameMode.ComputerVsPlayer:
+                        colour = Colour.Black;
+                        break;
+                }
+                _model.Click(row, column, colour);
+            }
+            catch (ChessException e)
             {
                 OnMessage(e.Message, "Warning");
             }
@@ -182,6 +207,13 @@ namespace Chess.ViewModel
         private void OnMessage(string text, string caption)
         {
             Message?.Invoke(this, new MessageEventArgs(text, caption));
+        }
+
+        public event EventHandler<StartGameEventArgs> StartGame;
+
+        private void OnStartGame(GameMode mode)
+        {
+            StartGame?.Invoke(this, new StartGameEventArgs(mode));
         }
 
         #endregion

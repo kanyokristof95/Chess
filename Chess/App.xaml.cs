@@ -2,6 +2,7 @@
 using Chess.View;
 using Chess.ViewModel;
 using Chess.Model;
+using Chess.Computer;
 
 namespace Chess
 {
@@ -10,6 +11,7 @@ namespace Chess
         #region Fields
 
         private ChessModel _model;
+        private ChessComputer _computer;
         private ChessViewModel _viewModel;
         private MainWindow _view;
 
@@ -41,13 +43,13 @@ namespace Chess
             _viewModel = new ChessViewModel(_model);
             _viewModel.Message += _viewModel_Message;
 
+            _computer = new ChessComputer(_model, _viewModel);
+
             _view = new MainWindow
             {
                 DataContext = _viewModel
             };
             _view.Show();
-
-            _model.NewGame();
         }
 
         private void _viewModel_Message(object sender, MessageEventArgs e)

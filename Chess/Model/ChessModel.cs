@@ -98,7 +98,7 @@ namespace Chess.Model
         public void Click(int row, char column, Colour player)
         {
             if (player != _table.CurrentPlayer)
-                throw new ChessException("It isn not your turn!");
+                throw new ChessException("It isn't your turn!");
 
             Piece startPiece = Piece.Empty;
             List<FieldPosition> list = new List<FieldPosition>();
@@ -148,6 +148,8 @@ namespace Chess.Model
                         OnCheck();
                     }
                 }
+
+                OnNextTurn(_table.CurrentPlayer);
             } else
             {
                 list.AddRange(ValidSteps());
@@ -819,7 +821,19 @@ namespace Chess.Model
 
         public List<FieldPosition> ValidSelects()
         {
-            return ValidSelects(_table);
+            var allSelects = ValidSelects(_table);
+
+            List<FieldPosition> selects = new List<FieldPosition>();
+            foreach (var item in allSelects)
+            {
+                Table newTable = new Table(_table);
+                ChessModel.Click(newTable, item.Row, item.Column, false);
+                var t_steps = ChessModel.ValidSteps(newTable, true);
+                if (t_steps.Count > 0)
+                    selects.Add(item);
+            }
+
+            return selects;
         }
 
 
@@ -892,6 +906,11 @@ namespace Chess.Model
             return GetStepInformation(_table);
         }
 
+        public Table GetTable()
+        {
+            return new Table(_table);
+        }
+
         #endregion
 
 
@@ -919,6 +938,15 @@ namespace Chess.Model
         {
             RefreshFields?.Invoke(this, new FieldsEventArgs(list));
         }
+
+
+        public event EventHandler<ColourEventArgs> NextTurn;
+
+        private void OnNextTurn(Colour colour)
+        {
+            NextTurn?.Invoke(this, new ColourEventArgs(colour));
+        }
+
 
         #endregion
 
