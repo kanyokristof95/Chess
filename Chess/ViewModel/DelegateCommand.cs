@@ -12,6 +12,7 @@ namespace Chess.ViewModel
 
         #endregion
 
+
         #region Constructor
 
         public DelegateCommand(Action<Object> execute) : this(null, execute) { }
@@ -23,6 +24,7 @@ namespace Chess.ViewModel
         }
 
         #endregion
+
 
         #region Methods of Execute
 
@@ -42,11 +44,13 @@ namespace Chess.ViewModel
 
         #endregion
 
+
         #region Events
 
         public event EventHandler CanExecuteChanged;
 
         #endregion
+
 
         #region Event handler
 
@@ -56,5 +60,6 @@ namespace Chess.ViewModel
         }
 
         #endregion
+
     }
 }

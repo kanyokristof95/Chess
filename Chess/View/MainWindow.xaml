@@ -20,10 +20,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />
             <RowDefinition Height="*"/>
-            <RowDefinition Height="20" />
+            <RowDefinition Height="24" />
         </Grid.RowDefinitions>
         <!-- Menu -->
-        <Menu Grid.Row="0" Margin="2,0,-2,0">
+        <Menu Grid.Row="0">
             <MenuItem Header="Game">
                 <MenuItem Header="New Game" Command="{Binding NewGameCommand}" InputGestureText="Ctrl+N"/>
                 <Separator />

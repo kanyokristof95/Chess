@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chess.Persistence;
+﻿using Chess.Persistence;
 
 namespace Chess.ViewModel
 {
@@ -75,8 +70,14 @@ namespace Chess.ViewModel
             }
         }
 
+        #endregion
+
+
+        #region Commands
+
         public DelegateCommand ClickCommand { get; set; }
 
         #endregion
+
     }
 }

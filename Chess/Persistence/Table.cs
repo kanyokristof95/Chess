@@ -1,10 +1,23 @@
-﻿using Chess.Persistence;
-using System.Collections.Generic;
-
-namespace Chess.Persistence
+﻿namespace Chess.Persistence
 {
     public class Table
     {
+        #region Fields
+
+        private Field[,] _table;
+
+        #endregion
+
+
+        #region Constants
+
+        private const int size = 8;
+
+        #endregion
+
+
+        #region Properties 
+
         public GameStatus GameStatus { get; set; }
 
         public StepInformation StepInformation { get; set; }
@@ -15,10 +28,10 @@ namespace Chess.Persistence
 
         public FieldPosition SelectedField { get; set; }
 
+        #endregion
 
-        private Field[,] _table;
 
-        private const int size = 8;
+        #region Constructors
 
         public Table()
         {
@@ -56,6 +69,11 @@ namespace Chess.Persistence
                 }
             }
         }
+
+        #endregion
+
+
+        #region Public methods
 
         public int convert(int row)
         {
@@ -97,5 +115,8 @@ namespace Chess.Persistence
             a = b;
             b = tmp;
         }
+
+        #endregion
+
     }
 }

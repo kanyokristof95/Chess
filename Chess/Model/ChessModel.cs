@@ -7,11 +7,16 @@ namespace Chess.Model
 {
     public class ChessModel
     {
-        #region Attributes 
+        #region Fields 
 
         private Table _table;
 
         private List<Table> _previousList;
+
+        #endregion
+
+
+        #region Constants
 
         public const int capacity = 100;
 
@@ -32,7 +37,7 @@ namespace Chess.Model
         #endregion
 
 
-        #region Public action methods
+        #region Public methods
 
         public void NewGame()
         {
@@ -95,6 +100,7 @@ namespace Chess.Model
             if (player != _table.CurrentPlayer)
                 throw new ChessException("It isn not your turn!");
 
+            Piece startPiece = Piece.Empty;
             List<FieldPosition> list = new List<FieldPosition>();
         
             int s_row = 0;
@@ -106,6 +112,7 @@ namespace Chess.Model
                 list.Add(_table.SelectedField);
                 s_row = SelectedField.Row;
                 s_column = SelectedField.Column;
+                startPiece = _table[s_row, s_column].Piece;
             }
 
             Table old = new Table(_table);
@@ -117,13 +124,13 @@ namespace Chess.Model
 
                 _previousList.Add(old);
 
-                if (row == 1 && player == Colour.White && _table[s_row, s_column].Piece == Piece.King)
+                if (row == 1 && player == Colour.White && startPiece == Piece.King)
                 {
                     list.Add(new FieldPosition(1, 'a'));
                     list.Add(new FieldPosition(1, 'h'));
                 }
 
-                if (row == 8 && player == Colour.Black && _table[s_row, s_column].Piece == Piece.King)
+                if (row == 8 && player == Colour.Black && startPiece == Piece.King)
                 {
                     list.Add(new FieldPosition(8, 'a'));
                     list.Add(new FieldPosition(8, 'h'));
@@ -257,16 +264,18 @@ namespace Chess.Model
                     if (IsCheck(table)) {
                         if(IsStaleMate(table))
                         {
-                            OnCheckMate(table);
+                            table.GameStatus = GameStatus.NotInGame;
+                            table.StepInformation = StepInformation.CheckMate;
                         } else
                         {
-                            OnCheck(table);
+                            table.StepInformation = StepInformation.Check;
                         }
                     } else
                     {
                         if (IsStaleMate(table))
                         {
-                            OnStalemate(table);
+                            table.GameStatus = GameStatus.NotInGame;
+                            table.StepInformation = StepInformation.Stalemate;
                         }
                     }
                 }
@@ -275,8 +284,6 @@ namespace Chess.Model
             }
             else
             {
-                table.StepStatus = StepStatus.WaitingForSelect;
-                table.SelectedField = null;
                 throw new ChessException("Invalid step!");
             }
         }
@@ -306,7 +313,7 @@ namespace Chess.Model
         }
 
 
-        private static bool isSafe(Table table, int row, char column)
+        private static bool IsSafe(Table table, int row, char column)
         {
             Table newTable = new Table(table);
             Step(newTable, row, column, false);
@@ -362,33 +369,11 @@ namespace Chess.Model
         #endregion
 
 
-        #region OnMethods
-
-        private static void OnCheck(Table table)
-        {
-            table.StepInformation = StepInformation.Check;
-        }
-
-        private static void OnCheckMate(Table table)
-        {
-            table.GameStatus = GameStatus.NotInGame;
-            table.StepInformation = StepInformation.CheckMate;
-        }
-
-        private static void OnStalemate(Table table)
-        {
-            table.GameStatus = GameStatus.NotInGame;
-            table.StepInformation = StepInformation.Stalemate;
-        }
-
-        #endregion
-
-
         #region Check step validity
 
         private static bool IsValidStep(Table table, int row, char column, bool checkCheck)
         {
-            bool ret = false;
+            bool ret;
 
             if (table.StepStatus == StepStatus.WaitingForSelect)
                 return false;
@@ -447,8 +432,7 @@ namespace Chess.Model
 
             if(Math.Abs(row-s_row) <= 1 && Math.Abs(column-s_column) <= 1)
             {
-                //if (!checkCheck || isSafe(table, row, column))
-                    return true;
+                return true;
             }
 
             if(table[s_row, s_column].Step == 0)
@@ -456,28 +440,28 @@ namespace Chess.Model
                 if(row == 1 && column == 'g' && table[1, 'h'].Piece == Piece.Rook && table[1, 'h'].Colour == Colour.White && table[1, 'h'].Step == 0
                     && table[row, (char)(s_column + 1)].Piece == Piece.Empty && table[row, (char) (s_column + 2)].Piece == Piece.Empty)
                 {
-                    if(!checkCheck || (isSafe(table, row, (char)(s_column + 1)) /*&& isSafe(table, row, (char)(s_column + 2))*/))
+                    if(!checkCheck || (IsSafe(table, row, (char)(s_column + 1))))
                         return true;
                 }
 
                 if (row == 1 && column == 'c' && table[1, 'a'].Piece == Piece.Rook && table[1, 'a'].Colour == Colour.White && table[1, 'a'].Step == 0
                     && table[row, (char)(s_column - 1)].Piece == Piece.Empty && table[row, (char)(s_column - 2)].Piece == Piece.Empty && table[row, (char)(s_column - 3)].Piece == Piece.Empty)
                 {
-                    if (!checkCheck || (isSafe(table, row, (char)(s_column - 1)) /*&& isSafe(table, row, (char)(s_column - 2))*/))
+                    if (!checkCheck || (IsSafe(table, row, (char)(s_column - 1))))
                         return true;
                 }
 
                 if (row == 8 && column == 'g' && table[8, 'h'].Piece == Piece.Rook && table[8, 'h'].Colour == Colour.Black && table[8, 'h'].Step == 0
                     && table[row, (char)(s_column + 1)].Piece == Piece.Empty && table[row, (char)(s_column + 2)].Piece == Piece.Empty)
                 {
-                    if (!checkCheck || (isSafe(table, row, (char)(s_column + 1)) /*&& isSafe(table, row, (char)(s_column + 2))*/))
+                    if (!checkCheck || (IsSafe(table, row, (char)(s_column + 1))))
                         return true;
                 }
 
                 if (row == 8 && column == 'c' && table[8, 'a'].Piece == Piece.Rook && table[8, 'a'].Colour == Colour.Black && table[8, 'a'].Step == 0
                     && table[row, (char)(s_column - 1)].Piece == Piece.Empty && table[row, (char)(s_column - 2)].Piece == Piece.Empty && table[row, (char)(s_column - 3)].Piece == Piece.Empty)
                 {
-                    if (!checkCheck || (isSafe(table, row, (char)(s_column - 1)) /*&& isSafe(table, row, (char)(s_column - 2))*/))
+                    if (!checkCheck || (IsSafe(table, row, (char)(s_column - 1))))
                         return true;
                 }
             }
@@ -902,6 +886,7 @@ namespace Chess.Model
         {
             return table.StepInformation;
         }
+
         public StepInformation GetStepInformation()
         {
             return GetStepInformation(_table);

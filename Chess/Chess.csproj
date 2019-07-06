@@ -70,12 +70,12 @@
     <Compile Include="Persistence\FieldPosition.cs" />
     <Compile Include="Persistence\GameStatus.cs" />
     <Compile Include="Persistence\IPersistence.cs" />
-    <Compile Include="Persistence\Player.cs" />
     <Compile Include="Persistence\StepInformation.cs" />
     <Compile Include="Persistence\StepStatus.cs" />
     <Compile Include="ViewModel\ChessViewModel.cs" />
     <Compile Include="ViewModel\DelegateCommand.cs" />
     <Compile Include="ViewModel\GridField.cs" />
+    <Compile Include="ViewModel\MessageEventArgs.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="View\FieldIndexConverter.cs" />
     <Compile Include="View\MainWindow.xaml.cs">

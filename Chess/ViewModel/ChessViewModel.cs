@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
 using Chess.Model;
 using Chess.Persistence;
 
@@ -10,7 +9,14 @@ namespace Chess.ViewModel
 {
     public class ChessViewModel : ViewModelBase
     {
+        #region Fields
+
         private readonly ChessModel _model;
+
+        #endregion
+
+
+        #region Constructor
 
         public ChessViewModel(ChessModel model)
         {
@@ -22,11 +28,14 @@ namespace Chess.ViewModel
             Fields = new ObservableCollection<GridField>();
 
             NewGameCommand = new DelegateCommand(param => { NewGame(); });
-
             UndoCommand = new DelegateCommand(param => { Undo(); });
-
             ExitCommand = new DelegateCommand(param => { Exit(); });
         }
+
+        #endregion
+
+
+        #region Private methods 
 
         private void NewGame()
         {
@@ -55,18 +64,18 @@ namespace Chess.ViewModel
             Status = "White player";
         }
 
-        public void Undo()
+        private void Undo()
         {
             _model.Undo();
             Refresh();
         }
 
-        public void Exit()
+        private void Exit()
         {
             App.Current.Shutdown();
         }
 
-        public void ClickButton(object param)
+        private void ClickButton(object param)
         {
             var obj = param as Tuple<int, char>;
             int row = obj.Item1;
@@ -77,7 +86,7 @@ namespace Chess.ViewModel
                 _model.Click(row, column, _model.GetCurrentPlayer());
             } catch(ChessException e)
             {
-                MessageBox.Show(e.Message); // TODO
+                OnMessage(e.Message, "Warning");
             }
         }
 
@@ -107,13 +116,12 @@ namespace Chess.ViewModel
             Refresh(Fields.Select(e => new FieldPosition(e.Row, e.Column)));
         }
 
+        #endregion
+
+
+        #region Properties 
+
         public ObservableCollection<GridField> Fields { get; }
-
-        public DelegateCommand NewGameCommand { get; }
-
-        public DelegateCommand UndoCommand { get; }
-
-        public DelegateCommand ExitCommand { get; }
 
         private string _status;
 
@@ -127,28 +135,56 @@ namespace Chess.ViewModel
             }
         }
 
+        #endregion
 
+
+        #region Commands
+
+        public DelegateCommand NewGameCommand { get; }
+
+        public DelegateCommand UndoCommand { get; }
+
+        public DelegateCommand ExitCommand { get; }
+
+        #endregion
+
+
+        #region Event handlers
 
         private void _model_GameOver(object sender, GameOverEventArgs e)
         {
             Status = "Game Over";
-            //Refresh(); // TODO - delete
-
+            
             if (e.Reason == StepInformation.CheckMate)
-                MessageBox.Show("Check mate, winner is " + e.Winner.ToString() + " playere", "Game over");
+                OnMessage("Check mate! The winner is the " + e.Winner.ToString() + " player!", "Game over");
             else
-                MessageBox.Show("Stalemate", "Game Over");
+                OnMessage("Stalemate!", "Game Over");
         }
 
         private void _model_Check(object sender, EventArgs e)
         {
-            Status += " - Chess";
-            MessageBox.Show("Check", "Information");
+            Status += " - Check";
+            OnMessage("Check", "Warning");
         }
 
         private void _model_RefreshFields(object sender, FieldsEventArgs e)
         {
             Refresh(e.Fields);
         }
+
+        #endregion
+
+
+        #region Events
+
+        public event EventHandler<MessageEventArgs> Message;
+
+        private void OnMessage(string text, string caption)
+        {
+            Message?.Invoke(this, new MessageEventArgs(text, caption));
+        }
+
+        #endregion
+
     }
 }
