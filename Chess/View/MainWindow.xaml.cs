@@ -24,5 +24,10 @@ namespace Chess.View
         {
             InitializeComponent();
         }
+
+        private void Grid_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -24,6 +24,8 @@ namespace Chess.ViewModel
             NewGameCommand = new DelegateCommand(param => { NewGame(); });
 
             UndoCommand = new DelegateCommand(param => { Undo(); });
+
+            ExitCommand = new DelegateCommand(param => { Exit(); });
         }
 
         private void NewGame()
@@ -57,6 +59,11 @@ namespace Chess.ViewModel
         {
             _model.Undo();
             Refresh();
+        }
+
+        public void Exit()
+        {
+            App.Current.Shutdown();
         }
 
         public void ClickButton(object param)
@@ -105,6 +112,8 @@ namespace Chess.ViewModel
         public DelegateCommand NewGameCommand { get; }
 
         public DelegateCommand UndoCommand { get; }
+
+        public DelegateCommand ExitCommand { get; }
 
         private string _status;
 

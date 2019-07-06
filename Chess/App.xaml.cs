@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 using Chess.View;
@@ -24,6 +19,12 @@ namespace Chess
         public App()
         {
             Startup += App_Startup;
+            Exit += App_Exit;
+        }
+
+        private void App_Exit(object sender, ExitEventArgs e)
+        {
+            // TODO
         }
 
         private void App_Startup(object sender, StartupEventArgs e)
@@ -37,7 +38,6 @@ namespace Chess
                 DataContext = _viewModel
             };
             _view.Show();
-
 
             _model.NewGame();
 

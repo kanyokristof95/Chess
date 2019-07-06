@@ -14,6 +14,7 @@
     <Window.InputBindings>
         <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding NewGameCommand}"/>
         <KeyBinding Key="Z" Modifiers="Ctrl" Command="{Binding UndoCommand}"/>
+        <KeyBinding Key="Q" Modifiers="Ctrl" Command="{Binding ExitCommand}"/>
     </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -27,6 +28,8 @@
                 <MenuItem Header="New Game" Command="{Binding NewGameCommand}" InputGestureText="Ctrl+N"/>
                 <Separator />
                 <MenuItem Header="Undo" Command="{Binding UndoCommand}" InputGestureText="Ctrl+Z"/>
+                <Separator />
+                <MenuItem Header="Exit" Command="{Binding ExitCommand}" InputGestureText="Ctrl+Q"/>
             </MenuItem>
         </Menu>
 
@@ -42,7 +45,7 @@
             <ItemsControl.ItemTemplate>
                 <!-- Data will be buttons-->
                 <DataTemplate>
-                    <Button Command="{Binding ClickCommand}">
+                    <Button Command="{Binding ClickCommand}" Name="ParentButton">
                         <Button.CommandParameter>
                             <MultiBinding Converter="{StaticResource fieldIndexConverter}">
                                 <Binding Path="Row"/>
@@ -50,13 +53,13 @@
                             </MultiBinding>
                         </Button.CommandParameter>
 
-                        <Grid>
-                            <Ellipse Width="70" Height="70" Stretch="UniformToFill" >
+                        <Grid Width="{Binding ElementName=ParentButton, Path=ActualWidth}" Height="{Binding ElementName=ParentButton, Path=ActualHeight}">
+                            <Ellipse Stretch="Fill" Margin="15">
                                 <Ellipse.Style>
                                     <Style TargetType="Ellipse">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Optional}" Value="true">
-                                                <Setter Property="Fill" Value="Gray" />
+                                                <Setter Property="Fill" Value="Red" />
                                                 <Setter Property="Opacity" Value="0.5" />
                                             </DataTrigger>
                                         </Style.Triggers>
