@@ -65,6 +65,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\ChessException.cs" />
+    <Compile Include="Model\FieldsEventArgs.cs" />
+    <Compile Include="Model\GameOverEvent.cs" />
     <Compile Include="Persistence\FieldPosition.cs" />
     <Compile Include="Persistence\GameStatus.cs" />
     <Compile Include="Persistence\IPersistence.cs" />

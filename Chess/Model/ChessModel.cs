@@ -13,6 +13,8 @@ namespace Chess.Model
 
         private List<Table> _previousList;
 
+        public const int capacity = 100;
+
         #endregion
 
 
@@ -25,7 +27,7 @@ namespace Chess.Model
         
         #region Constructor
 
-        public ChessModel() { }
+        public ChessModel() {}
 
         #endregion
 
@@ -93,12 +95,60 @@ namespace Chess.Model
             if (player != _table.CurrentPlayer)
                 throw new ChessException("It isn not your turn!");
 
+            List<FieldPosition> list = new List<FieldPosition>();
+        
+            int s_row = 0;
+            char s_column = '-';
+
+            if (_table.StepStatus == StepStatus.WaitingForStep)
+            {
+                list.AddRange(ValidSteps());
+                list.Add(_table.SelectedField);
+                s_row = SelectedField.Row;
+                s_column = SelectedField.Column;
+            }
 
             Table old = new Table(_table);
 
             if(Click(_table, row, column, true))
             {
+                if (_previousList.Count == capacity)
+                    _previousList.RemoveAt(0);
+
                 _previousList.Add(old);
+
+                if (row == 1 && player == Colour.White && _table[s_row, s_column].Piece == Piece.King)
+                {
+                    list.Add(new FieldPosition(1, 'a'));
+                    list.Add(new FieldPosition(1, 'h'));
+                }
+
+                if (row == 8 && player == Colour.Black && _table[s_row, s_column].Piece == Piece.King)
+                {
+                    list.Add(new FieldPosition(8, 'a'));
+                    list.Add(new FieldPosition(8, 'h'));
+                }
+
+                OnRefreshFields(list);
+
+                if (_table.GameStatus == GameStatus.NotInGame)
+                {
+                    OnGameOver(GetOtherColour(), _table.StepInformation);
+                } else
+                {
+                    if(_table.StepInformation == StepInformation.Check)
+                    {
+                        OnCheck();
+                    }
+                }
+            } else
+            {
+                list.AddRange(ValidSteps());
+                FieldPosition pos = _table.SelectedField;
+                if(pos != null)
+                    list.Add(_table.SelectedField);
+
+                OnRefreshFields(list);
             }
         }
 
@@ -288,6 +338,19 @@ namespace Chess.Model
             return false;
         }
 
+        private static Colour GetOtherColour(Table table)
+        {
+            if (table.CurrentPlayer == Colour.White)
+                return Colour.Black;
+
+            return Colour.White;
+        }
+
+        private Colour GetOtherColour()
+        {
+            return GetOtherColour(_table);
+        }
+
         private static void NextPlayer(Table table)
         {
             if (table.CurrentPlayer == Colour.White)
@@ -297,6 +360,7 @@ namespace Chess.Model
         }
 
         #endregion
+
 
         #region OnMethods
 
@@ -841,6 +905,34 @@ namespace Chess.Model
         public StepInformation GetStepInformation()
         {
             return GetStepInformation(_table);
+        }
+
+        #endregion
+
+
+        #region Event
+
+        public event EventHandler<GameOverEventArgs> GameOver;
+
+        private void OnGameOver(Colour winner, StepInformation reason)
+        {
+            GameOver?.Invoke(this, new GameOverEventArgs(winner, reason));
+        }
+
+
+        public event EventHandler Check;
+
+        private void OnCheck()
+        {
+            Check?.Invoke(this, EventArgs.Empty);
+        }
+
+
+        public event EventHandler<FieldsEventArgs> RefreshFields;
+
+        private void OnRefreshFields(List<FieldPosition> list)
+        {
+            RefreshFields?.Invoke(this, new FieldsEventArgs(list));
         }
 
         #endregion

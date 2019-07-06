@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using Chess.Model;
 using Chess.Persistence;
@@ -13,6 +15,9 @@ namespace Chess.ViewModel
         public ChessViewModel(ChessModel model)
         {
             _model = model;
+            _model.GameOver += _model_GameOver;
+            _model.Check += _model_Check;
+            _model.RefreshFields += _model_RefreshFields;
 
             Fields = new ObservableCollection<GridField>();
 
@@ -67,46 +72,32 @@ namespace Chess.ViewModel
             {
                 MessageBox.Show(e.Message); // TODO
             }
-            Refresh();
+        }
+
+        private void Refresh(IEnumerable<FieldPosition> positions)
+        {
+            var list = _model.ValidSteps();
+
+            foreach (var position in positions)
+            {
+                int f_row = position.Row;
+                char f_column = position.Column;
+                int row = 8 - f_row;
+                int column = f_column - 'a';
+
+                GridField field = Fields[row * 8 + column];
+                field.Colour = _model.GetField(f_row, f_column).Colour;
+                field.Piece = _model.GetField(f_row, f_column).Piece;
+                field.Selected = (_model.SelectedField != null && _model.SelectedField.Row == f_row && _model.SelectedField.Column == f_column);
+                field.Optional = list.Exists(f => f.Row == f_row && f.Column == f_column);
+            }
+
+            Status = (_model.GetCurrentPlayer() == Colour.White) ? "White player" : "Black player";
         }
 
         private void Refresh()
         {
-            var list = _model.ValidSteps();
-
-            foreach(var field in Fields)
-            {
-                int row = field.Row;
-                char column = field.Column;
-                field.Colour = _model.GetField(row, column).Colour;
-                field.Piece = _model.GetField(row, column).Piece;
-                field.Selected = (_model.SelectedField != null && _model.SelectedField.Row == row && _model.SelectedField.Column == column);
-                field.Optional = list.Exists(f => f.Row == row && f.Column == column);
-            }
-
-            if(_model.GetGameStatus() == GameStatus.NotInGame)
-            {
-                Status = "Game Over - ";
-
-                if (_model.GetStepInformation() == StepInformation.CheckMate)
-                {
-                    Status += "Check Mate - Winner: ";
-                    Status += (_model.GetCurrentPlayer() == Colour.White) ? "Black player" : "White player";
-                }
-                else if (_model.GetStepInformation() == StepInformation.Stalemate)
-                {
-                    Status += "Stalemate";
-                }
-                
-            } else
-            {
-                Status = (_model.GetCurrentPlayer() == Colour.White) ? "White player" : "Black player";
-
-                if (_model.GetStepInformation() == StepInformation.Check)
-                {
-                    Status += " - Check";
-                }
-            }
+            Refresh(Fields.Select(e => new FieldPosition(e.Row, e.Column)));
         }
 
         public ObservableCollection<GridField> Fields { get; }
@@ -115,9 +106,9 @@ namespace Chess.ViewModel
 
         public DelegateCommand UndoCommand { get; }
 
-        private String _status;
+        private string _status;
 
-        public String Status
+        public string Status
         {
             get { return _status; }
             set
@@ -125,6 +116,30 @@ namespace Chess.ViewModel
                 _status = value;
                 OnPropertyChanged();
             }
+        }
+
+
+
+        private void _model_GameOver(object sender, GameOverEventArgs e)
+        {
+            Status = "Game Over";
+            //Refresh(); // TODO - delete
+
+            if (e.Reason == StepInformation.CheckMate)
+                MessageBox.Show("Check mate, winner is " + e.Winner.ToString() + " playere", "Game over");
+            else
+                MessageBox.Show("Stalemate", "Game Over");
+        }
+
+        private void _model_Check(object sender, EventArgs e)
+        {
+            Status += " - Chess";
+            MessageBox.Show("Check", "Information");
+        }
+
+        private void _model_RefreshFields(object sender, FieldsEventArgs e)
+        {
+            Refresh(e.Fields);
         }
     }
 }
