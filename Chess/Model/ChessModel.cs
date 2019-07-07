@@ -179,6 +179,9 @@ namespace Chess.Model
 
         public void Undo(int step = 1)
         {
+            if (_previousList == null)
+                return;
+
             int size = _previousList.Count;
             if (size < step)
                 return;
@@ -453,6 +456,9 @@ namespace Chess.Model
 
             if(table[s_row, s_column].Step == 0)
             {
+                if (table.StepInformation == StepInformation.Check)
+                    return false;
+
                 if(row == 1 && column == 'g' && table[1, 'h'].Piece == Piece.Rook && table[1, 'h'].Colour == Colour.White && table[1, 'h'].Step == 0
                     && table[row, (char)(s_column + 1)].Piece == Piece.Empty && table[row, (char) (s_column + 2)].Piece == Piece.Empty)
                 {

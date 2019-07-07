@@ -143,27 +143,33 @@ namespace Chess.ViewModel
 
         private void Refresh(IEnumerable<FieldPosition> positions)
         {
-            var list = _model.ValidSteps();
-
-            foreach (var position in positions)
+            try
             {
-                int f_row = position.Row;
-                char f_column = position.Column;
-                int row = 8 - f_row;
-                int column = f_column - 'a';
+                var list = _model.ValidSteps();
 
-                GridField field = Fields[row * 8 + column];
-                field.Colour = _model.GetField(f_row, f_column).Colour;
-                field.Piece = _model.GetField(f_row, f_column).Piece;
-                field.Selected = (_model.SelectedField != null && _model.SelectedField.Row == f_row && _model.SelectedField.Column == f_column);
-                field.LastStep = (_model.LastStep != null && _model.LastStep.Row == f_row && _model.LastStep.Column == f_column);
-                field.Optional = list.Exists(f => f.Row == f_row && f.Column == f_column);
+                foreach (var position in positions)
+                {
+                    int f_row = position.Row;
+                    char f_column = position.Column;
+                    int row = 8 - f_row;
+                    int column = f_column - 'a';
+
+                    GridField field = Fields[row * 8 + column];
+                    field.Colour = _model.GetField(f_row, f_column).Colour;
+                    field.Piece = _model.GetField(f_row, f_column).Piece;
+                    field.Selected = (_model.SelectedField != null && _model.SelectedField.Row == f_row && _model.SelectedField.Column == f_column);
+                    field.LastStep = (_model.LastStep != null && _model.LastStep.Row == f_row && _model.LastStep.Column == f_column);
+                    field.Optional = list.Exists(f => f.Row == f_row && f.Column == f_column);
+                }
+
+                Status = (_model.GetCurrentPlayer() == Colour.White) ? "White player" : "Black player";
+            } catch(Exception)
+            {
+                OnMessage("Invalid Undo!", "Warning");
             }
-
-            Status = (_model.GetCurrentPlayer() == Colour.White) ? "White player" : "Black player";
         }
 
-        private void Refresh()
+        public void Refresh()
         {
             Refresh(Fields.Select(e => new FieldPosition(e.Row, e.Column)));
         }

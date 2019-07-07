@@ -17,7 +17,7 @@ namespace Chess.Computer
 
         public ChessComputer(ChessModel model, ChessViewModel viewModel)
         {
-            aI = new RandomStepAI();
+            aI = new MiniMaxAI();
 
             _model = model;
             _model.NextTurn += _model_NextTurn;
