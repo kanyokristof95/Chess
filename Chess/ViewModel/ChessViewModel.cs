@@ -89,14 +89,14 @@ namespace Chess.ViewModel
 
                 if (_model.GetCurrentPlayer() == colour)
                 {
-                    _model.Undo();
-                    _model.Undo();
+                    _model.Undo(2);
+                    Refresh();
                 }
             } else
             {
-                _model.Undo();
+                _model.Undo(1);
+                Refresh();
             }
-            Refresh();
         }
 
         private void Exit()

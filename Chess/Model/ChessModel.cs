@@ -167,13 +167,15 @@ namespace Chess.Model
             _table.SelectedField = null;
         }
 
-        public void Undo()
+        public void Undo(int step = 1)
         {
-            if (_previousList.Count == 0)
+            int size = _previousList.Count;
+            if (size < step)
                 return;
 
-            Table table = _previousList.Last();
-            _previousList.Remove(table);
+            Table table = _previousList[size - step];
+            _previousList.RemoveRange(size - step, step);
+
             _table = table;
             Unselect();
         }
