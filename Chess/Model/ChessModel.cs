@@ -27,9 +27,11 @@ namespace Chess.Model
 
         public FieldPosition SelectedField { get { return _table.SelectedField; } }
 
+        public FieldPosition LastStep { get { return _table.LastStep; } }
+
         #endregion
 
-        
+
         #region Constructor
 
         public ChessModel() {}
@@ -82,6 +84,7 @@ namespace Chess.Model
             _table.CurrentPlayer = Colour.White;
             _table.StepStatus = StepStatus.WaitingForSelect;
             _table.SelectedField = null;
+            _table.LastStep = null;
         }
 
         public static bool Click(Table table, int row, char column, bool check)
@@ -110,6 +113,10 @@ namespace Chess.Model
             {
                 list.AddRange(ValidSteps());
                 list.Add(_table.SelectedField);
+
+                if (_table.LastStep != null)
+                    list.Add(_table.LastStep);
+
                 s_row = SelectedField.Row;
                 s_column = SelectedField.Column;
                 startPiece = _table[s_row, s_column].Piece;
@@ -156,6 +163,9 @@ namespace Chess.Model
                 FieldPosition pos = _table.SelectedField;
                 if(pos != null)
                     list.Add(_table.SelectedField);
+
+                if (_table.LastStep != null)
+                    list.Add(_table.LastStep);
 
                 OnRefreshFields(list);
             }
@@ -283,6 +293,8 @@ namespace Chess.Model
                         }
                     }
                 }
+
+                table.LastStep = new FieldPosition(row, column);
 
                 return true;
             }

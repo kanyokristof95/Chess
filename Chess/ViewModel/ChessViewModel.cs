@@ -57,6 +57,7 @@ namespace Chess.ViewModel
                         Piece = _model.GetField(row, column).Piece,
                         Selected = false,
                         Optional = false,
+                        LastStep = false,
                         Background = ((row + (int) column) % 2 == 0) ? Persistence.Colour.Black : Persistence.Colour.White,
                         ClickCommand = new DelegateCommand(param => ClickButton(param))
                     }); 
@@ -91,6 +92,13 @@ namespace Chess.ViewModel
                 {
                     _model.Undo(2);
                     Refresh();
+                } else
+                {
+                    if(_model.GetGameStatus() == GameStatus.NotInGame)
+                    {
+                        _model.Undo(1);
+                        Refresh();
+                    }
                 }
             } else
             {
@@ -148,6 +156,7 @@ namespace Chess.ViewModel
                 field.Colour = _model.GetField(f_row, f_column).Colour;
                 field.Piece = _model.GetField(f_row, f_column).Piece;
                 field.Selected = (_model.SelectedField != null && _model.SelectedField.Row == f_row && _model.SelectedField.Column == f_column);
+                field.LastStep = (_model.LastStep != null && _model.LastStep.Row == f_row && _model.LastStep.Column == f_column);
                 field.Optional = list.Exists(f => f.Row == f_row && f.Column == f_column);
             }
 

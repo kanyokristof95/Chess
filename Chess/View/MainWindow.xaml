@@ -216,6 +216,10 @@
                                         <Setter Property="Background" Value="#ffce9e" />
                                     </DataTrigger>
 
+                                    <DataTrigger Binding="{Binding LastStep}" Value="true">
+                                        <Setter Property="Background" Value="GreenYellow" />
+                                    </DataTrigger>
+
                                     <DataTrigger Binding="{Binding Selected}" Value="true">
                                         <Setter Property="Background" Value="#f6f682" />
                                     </DataTrigger>

@@ -46,6 +46,18 @@ namespace Chess.ViewModel
             }
         }
 
+        private bool _lastStep;
+
+        public bool LastStep
+        {
+            get => _lastStep;
+            set
+            {
+                _lastStep = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool _selected;
 
         public bool Selected

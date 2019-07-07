@@ -28,6 +28,8 @@
 
         public FieldPosition SelectedField { get; set; }
 
+        public FieldPosition LastStep { get; set; }
+
         #endregion
 
 
@@ -54,6 +56,8 @@
             StepStatus = table.StepStatus;
             if(table.SelectedField != null)
                 SelectedField = new FieldPosition(table.SelectedField.Row, table.SelectedField.Column);
+
+            LastStep = table.LastStep;
 
             _table = new Field[size, size];
             for (int i = 0; i < size; i++)
