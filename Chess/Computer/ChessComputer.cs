@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Chess.Model;
+﻿using Chess.Model;
 using Chess.ViewModel;
 using Chess.Persistence;
+using Chess.Computer.AI;
 
 namespace Chess.Computer
 {
     public class ChessComputer
     {
-        private readonly Random _random = new Random();
+        private readonly IAI aI;
 
         private ChessModel _model;
         private ChessViewModel _viewModel;
@@ -21,6 +17,8 @@ namespace Chess.Computer
 
         public ChessComputer(ChessModel model, ChessViewModel viewModel)
         {
+            aI = new RandomStepAI();
+
             _model = model;
             _model.NextTurn += _model_NextTurn;
 
@@ -31,11 +29,21 @@ namespace Chess.Computer
         private void _viewModel_StartGame(object sender, StartGameEventArgs e)
         {
             _gameMode = e.GameMode;
-            _colour = (e.GameMode == GameMode.PlayerVsComputer) ? Colour.Black : Colour.White;
+            switch (e.GameMode)
+            {
+                case GameMode.PlayerVsPlayer:
+                    _colour = Colour.Empty;
+                    break;
+                case GameMode.PlayerVsComputer:
+                    _colour = Colour.Black;
+                    break;
+                case GameMode.ComputerVsPlayer:
+                    _colour = Colour.White;
+                    break;
+            }
 
             if (_gameMode == GameMode.ComputerVsPlayer)
                 OnNextTurn(_colour);
-
         }
 
         private void _model_NextTurn(object sender, ColourEventArgs e)
@@ -53,13 +61,11 @@ namespace Chess.Computer
 
             if (colour == _colour)
             {
-                var selects = _model.ValidSelects();
+                var tuple = aI.GoodStep(_model.GetTable());
+                var select = tuple.Item1;
+                var step = tuple.Item2;
 
-                FieldPosition select = selects[_random.Next(selects.Count)];
                 _model.Click(select.Row, select.Column, _colour);
-
-                var steps = _model.ValidSteps();
-                FieldPosition step = steps[_random.Next(steps.Count)];
                 _model.Click(step.Row, step.Column, _colour);
             }
         }

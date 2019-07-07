@@ -819,14 +819,14 @@ namespace Chess.Model
             return list;
         }
 
-        public List<FieldPosition> ValidSelects()
+        public static List<FieldPosition> ValidSelectsAndSteps(Table table)
         {
-            var allSelects = ValidSelects(_table);
+            var allSelects = ValidSelects(table);
 
             List<FieldPosition> selects = new List<FieldPosition>();
             foreach (var item in allSelects)
             {
-                Table newTable = new Table(_table);
+                Table newTable = new Table(table);
                 ChessModel.Click(newTable, item.Row, item.Column, false);
                 var t_steps = ChessModel.ValidSteps(newTable, true);
                 if (t_steps.Count > 0)
@@ -834,6 +834,11 @@ namespace Chess.Model
             }
 
             return selects;
+        }
+
+        public List<FieldPosition> ValidSelects()
+        {
+            return ValidSelects(_table);
         }
 
 

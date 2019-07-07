@@ -66,18 +66,36 @@ namespace Chess.ViewModel
             Status = "White player";
 
             _gameMode = gameMode;
-            if (gameMode != GameMode.PlayerVsPlayer)
-            {
-                OnStartGame(_gameMode);
-            }
+            OnStartGame(_gameMode);
         }
 
         private void Undo()
         {
             if (_gameMode != GameMode.PlayerVsPlayer)
-                return;
+            {
+                Colour colour = Colour.Empty;
+                switch (_gameMode)
+                {
+                    case GameMode.PlayerVsPlayer:
+                        colour = _model.GetCurrentPlayer();
+                        break;
+                    case GameMode.PlayerVsComputer:
+                        colour = Colour.White;
+                        break;
+                    case GameMode.ComputerVsPlayer:
+                        colour = Colour.Black;
+                        break;
+                }
 
-            _model.Undo();
+                if (_model.GetCurrentPlayer() == colour)
+                {
+                    _model.Undo();
+                    _model.Undo();
+                }
+            } else
+            {
+                _model.Undo();
+            }
             Refresh();
         }
 
