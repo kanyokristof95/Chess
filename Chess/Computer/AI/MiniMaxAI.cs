@@ -9,7 +9,7 @@ namespace Chess.Computer.AI
     public class MiniMaxAI : IAI
     {
         private readonly IHeuristic heuristic = new pieceHeuristic();
-        private const int level = 2;
+        private const int level = 3;
 
         public Tuple<FieldPosition, FieldPosition> GoodStep(Table currentTable)
         {

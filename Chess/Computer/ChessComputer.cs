@@ -2,6 +2,7 @@
 using Chess.ViewModel;
 using Chess.Persistence;
 using Chess.Computer.AI;
+using System.Threading.Tasks;
 
 namespace Chess.Computer
 {
@@ -51,23 +52,26 @@ namespace Chess.Computer
             OnNextTurn(e.Colour);
         }
 
-        private void OnNextTurn(Colour colour)
+        private async void OnNextTurn(Colour colour)
         {
-            if (_gameMode == GameMode.PlayerVsPlayer)
-                return;
-
-            if (_model.GetGameStatus() == GameStatus.NotInGame)
-                return;
-
-            if (colour == _colour)
+            await Task.Run(() =>
             {
-                var tuple = aI.GoodStep(_model.GetTable());
-                var select = tuple.Item1;
-                var step = tuple.Item2;
+                if (_gameMode == GameMode.PlayerVsPlayer)
+                    return;
 
-                _model.Click(select.Row, select.Column, _colour);
-                _model.Click(step.Row, step.Column, _colour);
-            }
+                if (_model.GetGameStatus() == GameStatus.NotInGame)
+                    return;
+
+                if (colour == _colour)
+                {
+                    var tuple = aI.GoodStep(_model.GetTable());
+                    var select = tuple.Item1;
+                    var step = tuple.Item2;
+
+                    _model.Click(select.Row, select.Column, _colour);
+                    _model.Click(step.Row, step.Column, _colour);
+                }
+            });
         }
     }
 }
