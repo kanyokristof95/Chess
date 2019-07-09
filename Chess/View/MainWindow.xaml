@@ -31,13 +31,7 @@
                     <MenuItem Header="Player vs Computer" Command="{Binding NewGameCommand}" CommandParameter="{x:Static viewModel:GameMode.PlayerVsComputer}"/>
                     <MenuItem Header="Computer vs Player" Command="{Binding NewGameCommand}" CommandParameter="{x:Static viewModel:GameMode.ComputerVsPlayer}"/>
                 </MenuItem>
-                <MenuItem Header="Difficulty">
-                    <MenuItem Header="Very easy" IsChecked="True"/>
-                    <MenuItem Header="Easy"/>
-                </MenuItem>
-                <Separator />
                 <MenuItem Header="Undo" Command="{Binding UndoCommand}" InputGestureText="Ctrl+Z"/>
-                <Separator />
                 <MenuItem Header="Exit" Command="{Binding ExitCommand}" InputGestureText="Ctrl+Q"/>
             </MenuItem>
         </Menu>
@@ -217,7 +211,7 @@
                                     </DataTrigger>
 
                                     <DataTrigger Binding="{Binding LastStep}" Value="true">
-                                        <Setter Property="Background" Value="GreenYellow" />
+                                        <Setter Property="Background" Value="#97e0ff" />
                                     </DataTrigger>
 
                                     <DataTrigger Binding="{Binding Selected}" Value="true">
