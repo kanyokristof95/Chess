@@ -60,10 +60,11 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Computer\AI\AI.cs" />
+    <Compile Include="Computer\AI\AlphaBetaAI.cs" />
     <Compile Include="Computer\AI\MiniMaxAI.cs" />
     <Compile Include="Computer\AI\Heuristic\pieceHeuristic.cs" />
     <Compile Include="Computer\AI\Heuristic\IHeuristic.cs" />
-    <Compile Include="Computer\AI\MiniMaxNode.cs" />
+    <Compile Include="Computer\AI\Node.cs" />
     <Compile Include="Computer\AI\RandomStepAI.cs" />
     <Compile Include="Computer\ChessComputer.cs" />
     <Compile Include="App.xaml.cs">

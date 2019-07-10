@@ -11,8 +11,6 @@ namespace Chess.Computer.AI.Heuristic
             {
                 for(char column = 'a'; column <= 'h'; column++)
                 {
-                    double tmp = 0;
-
                     if(table[row, column].Colour == playerColour)
                     {
                         switch (table[row, column].Piece)
@@ -94,9 +92,9 @@ namespace Chess.Computer.AI.Heuristic
                 if (table.StepInformation == StepInformation.Check)
                 {
                     if (table.CurrentPlayer == playerColour)
-                        score -= 0.5;
+                        score -= 0.45;
                     else
-                        score += 0.5;
+                        score += 0.45;
                 }
             }
 

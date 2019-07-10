@@ -9,7 +9,7 @@ namespace Chess.Computer.AI
         Min
     }
 
-    public class MiniMaxNode
+    public class Node
     {
         public FieldPosition SelectPosition { get; set; }
 
@@ -21,13 +21,15 @@ namespace Chess.Computer.AI
 
         public Table Table { get; set; }
 
-        public List<MiniMaxNode> Children { get; set; }
+        public int Pos { get; set; }
 
-        public MiniMaxNode Parent { get; set; }
+        public List<Node> Children { get; set; }
 
-        public MiniMaxNode()
+        public Node Parent { get; set; }
+
+        public Node()
         {
-            Children = new List<MiniMaxNode>();
+            Children = new List<Node>();
         }
     }
 }
